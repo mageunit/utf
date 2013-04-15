@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="../../../../../bootstrap.php" colors="true" syntaxCheck="false">
+    <testsuite name="Mage Wishlist Module Tests">
+        <directory>./</directory>
+    </testsuite>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">../../../../../../../../app/code/core/Mage/Wishlist</directory>
+            <exclude>
+                <directory prefix="mysql4-">../../../../../../../../app/code/core/Mage/Wishlist</directory>
+                <directory prefix="data-">../../../../../../../../app/code/core/Mage/Wishlist</directory>
+                <directory prefix="install-">../../../../../../../../app/code/core/Mage/Wishlist</directory>
+                <directory prefix="upgrade-">../../../../../../../../app/code/core/Mage/Wishlist</directory>
+                <directory prefix="mssql-">../../../../../../../../app/code/core/Mage/Wishlist</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="coverage-html" target="./unit-tests-log/report" charset="UTF-8" yui="true" highlight="true" lowUpperBound="50" highLowerBound="80" />
+        <log type="testdox-html" target="./unit-tests-log/testdox.html" />
+    </logging>
+
+    <php>
+        <ini name="memory_limit" value="2048M" />
+    </php>
+</phpunit>

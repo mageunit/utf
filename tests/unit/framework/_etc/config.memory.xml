@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<config>
+    <global>
+        <resource>
+            <connection>
+                <types>
+                    <memory>
+                        <class>Magento_PHPUnit_Db_Type_Memory</class>
+                    </memory>
+                </types>
+            </connection>
+        </resource>
+    </global>
+    <install>
+        <databases>
+            <memory>
+                <type>memory</type>
+            </memory>
+        </databases>
+    </install>
+</config>

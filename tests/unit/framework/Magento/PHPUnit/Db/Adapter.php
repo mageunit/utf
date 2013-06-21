@@ -864,4 +864,115 @@ class Magento_PHPUnit_Db_Adapter extends Magento_PHPUnit_Db_Abstract implements 
     {
         return 0;
     }
+
+    /**
+     * Create temporary table from DDL object
+     *
+     * @param Varien_Db_Ddl_Table $table
+     * @throws Zend_Db_Exception
+     * @return Zend_Db_Statement_Interface
+     */
+    public function createTemporaryTable(Varien_Db_Ddl_Table $table)
+    {
+        // TODO: Implement createTemporaryTable() method.
+    }
+
+    /**
+     * Drop temporary table from database
+     *
+     * @param string $tableName
+     * @param string $schemaName
+     * @return boolean
+     */
+    public function dropTemporaryTable($tableName, $schemaName = null)
+    {
+        // TODO: Implement dropTemporaryTable() method.
+    }
+
+    /**
+     * Rename several tables
+     *
+     * @param array $tablePairs array('oldName' => 'Name1', 'newName' => 'Name2')
+     *
+     * @return boolean
+     * @throws Zend_Db_Exception
+     */
+    public function renameTablesBatch(array $tablePairs)
+    {
+        // TODO: Implement renameTablesBatch() method.
+    }
+
+    /**
+     * Generate fragment of SQL, that check value against multiple condition cases
+     * and return different result depends on them
+     *
+     * @param string $valueName Name of value to check
+     * @param array $casesResults Cases and results
+     * @param string $defaultValue value to use if value doesn't confirm to any cases
+     *
+     * @return Zend_Db_Expr
+     */
+    public function getCaseSql($valueName, $casesResults, $defaultValue = null)
+    {
+        // TODO: Implement getCaseSql() method.
+    }
+
+    /**
+     * Get insert queries in array for insert by range with step parameter
+     *
+     * @param string $rangeField
+     * @param Varien_Db_Select $select
+     * @param int $stepCount
+     * @return array
+     */
+    public function selectsByRange($rangeField, Varien_Db_Select $select, $stepCount = 100)
+    {
+        // TODO: Implement selectsByRange() method.
+    }
+
+    /**
+     * Drop trigger
+     *
+     * @param string $triggerName
+     * @return Varien_Db_Adapter_Interface
+     */
+    public function dropTrigger($triggerName)
+    {
+        // TODO: Implement dropTrigger() method.
+    }
+
+    /**
+     * Convert date format to unix time
+     *
+     * @param string|Zend_Db_Expr $date
+     * @return mixed
+     */
+    public function getUnixTimestamp($date)
+    {
+        // TODO: Implement getUnixTimestamp() method.
+    }
+
+    /**
+     * Convert unix time to date format
+     *
+     * @param int|Zend_Db_Expr $timestamp
+     * @return mixed
+     */
+    public function fromUnixtime($timestamp)
+    {
+        // TODO: Implement fromUnixtime() method.
+    }
+
+    /**
+     * Change table auto increment value
+     *
+     * @param string $tableName
+     * @param string $increment
+     * @param null|string $schemaName
+     * @return Zend_Db_Statement_Interface
+     */
+    public function changeTableAutoIncrement($tableName, $increment, $schemaName = null)
+    {
+        // TODO: Implement changeTableAutoIncrement() method.
+    }
 }

@@ -33,12 +33,13 @@ class Mage_Wishlist_Model_ItemTest extends Magento_PHPUnit_TestCase
         parent::setUp();
         // init product mock
         $this->_product = $this->getMock(
-            Mage::getConfig()->getModelClassName('catalog/product'),
+            $this->getModelClassName('catalog/product'),
             array('getVisibleInSiteVisibilities', 'isSalable', 'getIdFieldName'), array(), '', false
         );
         $this->_product->setId(5)
             ->setStoreId(1)
-            ->setStatus(Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
+            ->setStatus(Mage_Catalog_Model_Product_Status::STATUS_ENABLED)
+            ->setVisibility(2);
         $this->_product->expects($this->any())
             ->method('getVisibleInSiteVisibilities')
             ->will($this->returnValue(array(3,2,4)));
@@ -51,30 +52,22 @@ class Mage_Wishlist_Model_ItemTest extends Magento_PHPUnit_TestCase
 
         // init item mock
         $this->_item = $this->getMock(
-            Mage::getConfig()->getModelClassName('wishlist/item'),
+            $this->getModelClassName('wishlist/item'),
             array('getId')
         );
         $this->_item->setProduct($this->_product)
-            ->setStoreId(0);
+            ->setStoreId(1);
 
         // init cart mock
-        $quote = $this->getMock(Mage::getConfig()->getModelClassName('sales/quote'), array('getItemByProduct'));
+        $quote = $this->getMock($this->getModelClassName('sales/quote'), array('getItemByProduct'));
         $quote->expects($this->any())
-                 ->method('getItemByProduct')
-                 ->will($this->returnValue(new Varien_Object()));
+             ->method('getItemByProduct')
+             ->will($this->returnValue(new Varien_Object()));
 
-        $this->_cart = $this->getMock(Mage::getConfig()->getModelClassName('checkout/cart'), array('addProduct'));
+        $this->_cart = $this->getMock($this->getModelClassName('checkout/cart'), array('addProduct'));
         $this->_cart->setQuote($quote)
             ->expects($this->any())
             ->method('addProduct');
-
-        // init catalog url resource
-        $resourceUrl = $this->getResourceSingletonMockBuilder('catalog/url')
-            ->setMethods(array('getRewriteByProductStore'))
-            ->getMock();
-        $resourceUrl->expects($this->any())
-            ->method('getRewriteByProductStore')
-            ->will($this->returnValue(array($this->_product->getId() => '', 'visibility' => 2)));
     }
 
     /**
@@ -84,7 +77,7 @@ class Mage_Wishlist_Model_ItemTest extends Magento_PHPUnit_TestCase
     {
         $this->_cart->expects($this->once())
                  ->method('addProduct');
-        $this->_product->setMandatoryInstallation(true);
+
         $this->assertTrue($this->_item->addToCart($this->_cart));
     }
 
@@ -94,10 +87,10 @@ class Mage_Wishlist_Model_ItemTest extends Magento_PHPUnit_TestCase
     public function testAddToCartStatusEnabled()
     {
         $this->_product->setStatus(Mage_Catalog_Model_Product_Status::STATUS_DISABLED);
-        $this->assertFalse($this->_item->addToCart($this->_cart), 'Try to add to cart disabled product.');
+        $this->assertFalse($this->_item->addToCart($this->_cart), 'Trying adding to the cart the disabled product.');
 
         $this->_product->setStatus(Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
-        $this->assertTrue($this->_item->addToCart($this->_cart), 'Try to add to cart disabled product.');
+        $this->assertTrue($this->_item->addToCart($this->_cart), 'Trying adding to the cart the disabled product.');
     }
 
     /**
@@ -105,32 +98,30 @@ class Mage_Wishlist_Model_ItemTest extends Magento_PHPUnit_TestCase
      */
     public function testAddToCartNotVisibleInSiteVisibilityStore()
     {
+        $this->_product->setVisibility(2);
         $this->_product->setStoreId(1);
-        $this->assertTrue($this->_item->addToCart($this->_cart), 'Try to add to cart the product from other store.');
+        $this->assertTrue($this->_item->addToCart($this->_cart), 'Trying adding to the cart the product from other store.');
 
         $this->_product->setStoreId(0);
-        $this->assertFalse($this->_item->addToCart($this->_cart), 'Try to add to cart the product from other store.');
+        $this->assertTrue($this->_item->addToCart($this->_cart), 'Trying adding to the cart the product from other store.');
+
+        $this->_product->setVisibility(0);
+        $this->_product->setStoreId(1);
+        $this->assertFalse($this->_item->addToCart($this->_cart), 'Trying adding to the cart the product from other store.');
+
+        $this->_product->setStoreId(0);
+        $this->assertTrue($this->_item->addToCart($this->_cart), 'Trying adding to the cart the product from other store.');
     }
 
     /**
      * Test for method: addToCart
      */
-    public function testAddToCartNotVisibleInSiteVisibilityUrlResource()
+    public function testAddToCartNotVisibleInSiteVisibility()
     {
-        $resourceUrl = $this->getResourceSingletonMockBuilder('catalog/url')
-            ->setMethods(array('getRewriteByProductStore'))
-            ->getMock();
-        $resourceUrl->expects($this->any())
-            ->method('getRewriteByProductStore')
-            ->will($this->returnValue(array($this->_product->getId() => '', 'visibility' => 2)));
+        $this->_product->setVisibility(2);
         $this->assertTrue($this->_item->addToCart($this->_cart));
 
-        $resourceUrl = $this->getResourceSingletonMockBuilder('catalog/url')
-            ->setMethods(array('getRewriteByProductStore'))
-            ->getMock();
-        $resourceUrl->expects($this->any())
-            ->method('getRewriteByProductStore')
-            ->will($this->returnValue(array('visibility' => 2)));
+        $this->_product->setVisibility(0);
         $this->assertFalse($this->_item->addToCart($this->_cart));
     }
 
@@ -139,20 +130,7 @@ class Mage_Wishlist_Model_ItemTest extends Magento_PHPUnit_TestCase
      */
     public function testAddToCartNotVisibleInSiteVisibilityProductVisible()
     {
-        $resourceUrl = $this->getResourceSingletonMockBuilder('catalog/url')
-            ->setMethods(array('getRewriteByProductStore'))
-            ->getMock();
-        $resourceUrl->expects($this->any())
-            ->method('getRewriteByProductStore')
-            ->will($this->returnValue(array($this->_product->getId() => '', 'visibility' => 2)));
-        $this->assertTrue($this->_item->addToCart($this->_cart));
-
-        $resourceUrl = $this->getResourceSingletonMockBuilder('catalog/url')
-            ->setMethods(array('getRewriteByProductStore'))
-            ->getMock();
-        $resourceUrl->expects($this->any())
-            ->method('getRewriteByProductStore')
-            ->will($this->returnValue(array($this->_product->getId() => '','visibility' => 6)));
+        $this->_product->setVisibility(6);
         $this->assertFalse($this->_item->addToCart($this->_cart));
     }
 
@@ -162,12 +140,13 @@ class Mage_Wishlist_Model_ItemTest extends Magento_PHPUnit_TestCase
     public function testAddToCartNotSalableProduct()
     {
         $productSalable = $this->getMock(
-            Mage::getConfig()->getModelClassName('catalog/product'),
+            $this->getModelClassName('catalog/product'),
             array('getVisibleInSiteVisibilities', 'isSalable', 'getIdFieldName'), array(), '', false
         );
         $productSalable->setId($this->_product->getId())
             ->setStoreId(1)
-            ->setStatus(Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
+            ->setStatus(Mage_Catalog_Model_Product_Status::STATUS_ENABLED)
+            ->setVisibility(2);
         $productSalable->expects($this->any())
             ->method('getVisibleInSiteVisibilities')
             ->will($this->returnValue(array(3,2,4)));
@@ -179,12 +158,13 @@ class Mage_Wishlist_Model_ItemTest extends Magento_PHPUnit_TestCase
             ->will($this->returnValue(false));
 
         $productUnsalable = $this->getMock(
-            Mage::getConfig()->getModelClassName('catalog/product'),
+            $this->getModelClassName('catalog/product'),
             array('getVisibleInSiteVisibilities', 'isSalable', 'getIdFieldName'), array(), '', false
         );
         $productUnsalable->setId($this->_product->getId())
             ->setStoreId(1)
-            ->setStatus(Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
+            ->setStatus(Mage_Catalog_Model_Product_Status::STATUS_ENABLED)
+            ->setVisibility(2);
         $productUnsalable->expects($this->any())
             ->method('getVisibleInSiteVisibilities')
             ->will($this->returnValue(array(3,2,4)));
@@ -216,7 +196,7 @@ class Mage_Wishlist_Model_ItemTest extends Magento_PHPUnit_TestCase
      */
     public function testAddToCartUsingDeleteFlag()
     {
-        $itemDelete = $this->getMock(Mage::getConfig()->getModelClassName('wishlist/item'), array('getId', 'delete'));
+        $itemDelete = $this->getMock($this->getModelClassName('wishlist/item'), array('getId', 'delete'));
         $itemDelete->setProduct($this->_product)
             ->setStoreId(0)
             ->expects($this->once())
@@ -225,7 +205,7 @@ class Mage_Wishlist_Model_ItemTest extends Magento_PHPUnit_TestCase
         $itemDelete->addToCart($this->_cart, true);
 
         $itemNotDelete = $this->getMock(
-            Mage::getConfig()->getModelClassName('wishlist/item'),
+            $this->getModelClassName('wishlist/item'),
             array('getId', 'delete')
         );
         $itemNotDelete->setProduct($this->_product)

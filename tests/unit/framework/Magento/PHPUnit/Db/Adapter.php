@@ -361,6 +361,18 @@ class Magento_PHPUnit_Db_Adapter extends Magento_PHPUnit_Db_Abstract implements 
     }
 
     /**
+     * Inserts a table row with specified data.
+     *
+     * @param mixed $table The table to insert data into.
+     * @param array $bind Column-value pairs.
+     * @return int The number of affected rows.
+     */
+    public function insertIgnore($table, array $bind)
+    {
+        // TODO Auto-generated method stub
+    }
+
+    /**
      * Enter description here ...
      *
      * @param unknown_type $sql
@@ -975,7 +987,7 @@ class Magento_PHPUnit_Db_Adapter extends Magento_PHPUnit_Db_Abstract implements 
     {
         // TODO: Implement changeTableAutoIncrement() method.
     }
-	
+
 	/**
      * Create new table from provided select statement
      *

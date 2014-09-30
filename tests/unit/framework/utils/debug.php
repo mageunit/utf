@@ -24,7 +24,7 @@ function setTestingFilePath($path)
 }
 
 //set your full path to your needed file to debug
-setTestingFilePath('D:\_Work\Click2Shop\www\tests\unit\tests\app\code\core\Mage\Wishlist\Model\ItemTest.php');
+setTestingFilePath('D:\_Work\Project\www\tests\unit\tests\app\code\core\Mage\Wishlist\Model\ItemTest.php');
 
 if (extension_loaded('xdebug')) {
     xdebug_disable();

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="./bootstrap.php" colors="true" syntaxCheck="false">
+    <testsuite name="Magento Full Test">
+        <directory>./</directory>
+    </testsuite>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">../../app/code/local</directory>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="coverage-html" target="../../build/unit-tests-log/report" charset="UTF-8" yui="true" highlight="true" lowUpperBound="50" highLowerBound="80" />
+        <log type="testdox-html" target="../../build/unit-tests-log/testdox.html" />
+    </logging>
+
+    <php>
+        <ini name="memory_limit" value="2048M" />
+    </php>
+</phpunit>

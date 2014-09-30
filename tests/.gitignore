@@ -1,0 +1,7 @@
+Thumbs.db
+/.idea
+phpunit.xml
+/integration/_var/*
+/integration/_etc/local.xml
+/integration/_dump/db_dump.sql_old
+unit-tests-log
